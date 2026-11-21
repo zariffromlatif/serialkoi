@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<title>SerialKoi Field Check</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 0; }
+  :root { --teal: #0d6b61; --teal-dark: #08514a; --teal-soft: #e3f0ed; --amber: #ffc145; --amber-soft: #fdf1d8; --ink: #12201d; --muted: #55635f; --line: #b9b3a6; --paper: #fff; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: #d9d5cb; font-family: "Hind Siliguri", system-ui, sans-serif; color: var(--ink); font-size: 10pt; line-height: 1.38; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { width: 210mm; height: 297mm; margin: 10mm auto; background: var(--paper); padding: 13mm 14mm 12mm; position: relative; overflow: hidden; box-shadow: 0 6px 30px rgba(0,0,0,.18); display: flex; flex-direction: column; }
+  @media print { body { background: none; } .page { margin: 0; box-shadow: none; break-after: page; } }
+  .en { color: var(--muted); font-size: .82em; font-weight: 500; }
+  .top { display: flex; justify-content: space-between; align-items: center; border-bottom: .6mm solid var(--teal); padding-bottom: 3mm; margin-bottom: 4mm; }
+  .brand { display: flex; align-items: center; gap: 2.5mm; font-weight: 700; font-size: 10.5pt; }
+  .mark { width: 8mm; height: 8mm; border-radius: 2mm; background: var(--teal); color: #fff; display: grid; place-items: center; font-size: 12pt; }
+  h1 { font-size: 17pt; margin: 0 0 1mm; line-height: 1.15; }
+  h2 { font-size: 11.5pt; margin: 4mm 0 1.5mm; display: flex; align-items: baseline; gap: 2mm; }
+  h2 .tag { background: var(--teal); color: #fff; border-radius: 1.5mm; padding: 0 2mm; font-size: 9.5pt; }
+  p { margin: 0 0 2mm; }
+  ol, ul { margin: 0 0 2mm; padding-left: 5mm; }
+  li { margin-bottom: 1.2mm; }
+  .box { border: .35mm solid #d6d0c3; border-radius: 3mm; padding: 3mm 4mm; }
+  .box.teal { background: var(--teal-soft); border-color: #c6e0da; }
+  .box.amber { background: var(--amber-soft); border-color: #f1d89a; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+  .mono { font-family: "Space Mono", monospace; }
+  /* form */
+  .row { display: flex; align-items: flex-end; gap: 2mm; margin: 0 0 2.6mm; }
+  .row label { white-space: nowrap; font-weight: 600; }
+  .row .fill { flex: 1; border-bottom: .3mm solid var(--line); height: 5.5mm; }
+  .row .short { flex: 0 0 22mm; border-bottom: .3mm solid var(--line); height: 5.5mm; }
+  .checks { display: flex; flex-wrap: wrap; gap: 1mm 4.5mm; margin: 0 0 2.6mm; }
+  .checks > span:not(.free)::before { content: ""; display: inline-block; width: 3.4mm; height: 3.4mm; border: .35mm solid var(--ink); border-radius: .6mm; margin-right: 1.3mm; vertical-align: -.5mm; }
+  .q { margin: 0 0 1mm; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { border: .3mm solid var(--line); padding: 1.2mm 1.5mm; text-align: center; vertical-align: middle; }
+  th { background: var(--teal-soft); font-size: 8.6pt; line-height: 1.2; }
+  td { height: 8.3mm; font-size: 8.4pt; color: var(--muted); }
+  td.c { text-align: left; }
+  .lines div { border-bottom: .3mm solid var(--line); height: 7mm; }
+  .foot { margin-top: auto; padding-top: 2mm; border-top: .3mm solid #e2ddd2; display: flex; justify-content: space-between; font-size: 8pt; color: var(--muted); }
+  .warn { color: #8a2b20; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- =========================================================== PAGE 1: INSTRUCTIONS -->
+<section class="page">
+  <div class="top">
+    <div class="brand"><div class="mark">স</div>সিরিয়াল কই · SerialKoi</div>
+    <div class="en">AppQuest 2.0 · Track A · BRAC University</div>
+  </div>
+  <h1>চেম্বার ফিল্ড চেক <span class="en">Chamber field check</span></h1>
+  <p><b>লক্ষ্য:</b> ৫টি ডাক্তারের চেম্বারে গিয়ে মাপুন রোগীরা আসলে কতক্ষণ অপেক্ষা করেন, আর সহকারীরা SerialKoi ব্যবহার করবেন কিনা। এই সংখ্যাগুলো আমাদের প্রস্তাবনার ৩ নম্বর পাতায় যাবে, আর ভিডিওর শুরুর দৃশ্যও এখান থেকে আসবে।<br>
+  <span class="en">Goal: measure real waiting times at 5 chambers and find out whether assistants would use SerialKoi. These numbers go on page 3 of the proposal, and the opening shots of the video come from these visits.</span></p>
+
+  <div class="grid2">
+    <div class="box teal">
+      <p style="margin:0"><b>কবে:</b> ২৬ নভেম্বরের মধ্যে, সন্ধ্যা ৬টা–৯টা (সবচেয়ে ভিড়)<br>
+      <b>কোথায়:</b> মেরুল বাড্ডা, রামপুরা, আফতাবনগর, বনশ্রী, প্রগতি সরণি<br>
+      <b>কতক্ষণ:</b> প্রতি চেম্বারে ৪৫–৬০ মিনিট<br>
+      <span class="en">By 26 Nov, 6–9 pm, chambers near BRAC; 45–60 minutes at each.</span></p>
+    </div>
+    <div class="box teal">
+      <p style="margin:0"><b>সাথে নিন:</b> এই ফর্ম ৫ কপি (২ নম্বর পাতা), কলম, চার্জ দেওয়া ফোন (সময় দেখা, ছবি, ভিডিও, ডেমো দেখানো)<br>
+      <span class="en">Bring: 5 copies of page 2, a pen, a charged phone for the clock, photos, video and the demo.</span></p>
+    </div>
+  </div>
+
+  <h2><span class="tag">ধাপ</span> প্রতিটি চেম্বারে যা করবেন <span class="en">Steps at each chamber</span></h2>
+  <ol>
+    <li><b>আগে অনুমতি নিন।</b> সহকারী বা ডাক্তারকে বলুন আপনি ব্র্যাক ইউনিভার্সিটির শিক্ষার্থী, একটা প্রজেক্টের জন্য অপেক্ষার সময় দেখছেন। না বললে ভদ্রভাবে চলে আসুন। <span class="en">Ask permission first. If they say no, thank them and leave.</span></li>
+    <li><b>পৌঁছে গুনুন</b> কতজন অপেক্ষা করছেন (ফর্মের অংশ ক)। <span class="en">On arrival, count how many people are waiting (part A).</span></li>
+    <li><b>৬ জন রোগীকে জিজ্ঞেস করুন</b> "কয়টায় এসেছেন?" আর কোন ফোন ব্যবহার করেন। তাঁর সিরিয়াল ডাকলে সময় লিখুন (অংশ গ)। নাম বা নম্বর নেবেন না। <span class="en">Ask 6 patients what time they arrived and what phone they use; note the time each is called (part C). No names or numbers.</span></li>
+    <li><b>সহকারীকে প্রশ্নগুলো করুন</b> (অংশ খ), তারপর ডেমো দেখান। <span class="en">Ask the assistant part B, then show the demo.</span></li>
+    <li><b>অনুমতি পেলে</b> একটা উক্তি লিখুন (অংশ ঘ) আর ছবি/ভিডিও নিন (অংশ ঙ)। <span class="en">With permission, write down a quote (part D) and take photos or video (part E).</span></li>
+  </ol>
+
+  <h2><span class="tag">বলুন</span> সহকারীকে যা বলবেন <span class="en">What to say to the assistant</span></h2>
+  <div class="box amber">
+    <p style="margin:0">"আসসালামু আলাইকুম। আমরা ব্র্যাক ইউনিভার্সিটির শিক্ষার্থী। আমরা SerialKoi নামে একটা সার্ভিস বানাচ্ছি: রোগী যেকোনো ফোন থেকে, বাটন ফোন থেকেও, ডায়াল করে সিরিয়াল নেবেন, আর সামনে ৩ জন থাকলে SMS পাবেন। তাই চেম্বারে ভিড় কম হবে, আপনার কাছে সিরিয়ালের ফোনও কম আসবে। আপনাকে শুধু মোবাইলে 'পরের রোগী' চাপতে হবে। চেম্বারের জন্য কোনো খরচ নেই। ২ মিনিট দেখাতে পারি?"</p>
+    <p class="en" style="margin:1.5mm 0 0">"We're BRAC students building SerialKoi: patients book a serial from any phone and get an SMS when 3 are ahead, so the room is less crowded and you get fewer serial calls. You only tap 'Next patient' on your phone. Free for chambers. Can I show you in 2 minutes?"</p>
+  </div>
+  <p style="margin-top:2mm"><b>ডেমো লিংক:</b> <span class="mono">https://demo.______________.sslip.io/sim</span> <span class="en">(Zarif will share it once the server is up)</span></p>
+
+  <h2><span class="tag">নিয়ম</span> যা করবেন না <span class="en">Rules</span></h2>
+  <ul>
+    <li class="warn">রোগীর নাম, ফোন নম্বর বা রোগের কথা লিখবেন না। রোগীর মুখের ছবি বা ভিডিও নেবেন না। <span class="en" style="font-weight:500">No patient names, numbers or illnesses; no patients' faces in photos or video.</span></li>
+    <li>দাম বা চালুর তারিখের প্রতিশ্রুতি দেবেন না। শুধু বলুন: "ডিসেম্বরে কয়েকটি চেম্বারে বিনামূল্যে পাইলট"। <span class="en">Don't promise prices or dates: only "a free pilot at a few chambers in December".</span></li>
+    <li>ডাক্তারের কাজে বাধা দেবেন না; সহকারী ব্যস্ত থাকলে অপেক্ষা করুন। <span class="en">Never interrupt the doctor; wait if the assistant is busy.</span></li>
+  </ul>
+
+  <h2><span class="tag">পরে</span> একই রাতে <span class="en">The same night</span></h2>
+  <p>পূরণ করা ফর্মের ছবি আর ভিডিও টিমের WhatsApp গ্রুপে পাঠান। জারিফ সংখ্যাগুলো প্রস্তাবনায় বসাবে। <span class="en">Send photos of the filled forms and any video to the team WhatsApp group; Zarif puts the numbers into the proposal.</span></p>
+
+  <div class="foot"><span>SerialKoi · ফিল্ড চেক নির্দেশনা · Field check instructions</span><span>পাতা ১ / ২</span></div>
+</section>
+
+<!-- =========================================================== PAGE 2: FORM (print 5) -->
+<section class="page">
+  <div class="top">
+    <div class="brand"><div class="mark">স</div>সিরিয়াল কই · ফিল্ড চেক ফর্ম <span class="en" style="margin-left:1mm">Field check form</span></div>
+    <div style="font-weight:700">চেম্বার নং <span class="mono">___ / 5</span></div>
+  </div>
+
+  <div class="grid2" style="gap:3mm 6mm">
+    <div class="row"><label>তারিখ <span class="en">Date</span></label><div class="fill"></div></div>
+    <div class="row"><label>সময় <span class="en">From–to</span></label><div class="fill"></div></div>
+    <div class="row"><label>এলাকা <span class="en">Area</span></label><div class="fill"></div></div>
+    <div class="row"><label>কে গিয়েছেন <span class="en">Visited by</span></label><div class="fill"></div></div>
+  </div>
+
+  <h2><span class="tag">ক</span> চেম্বার <span class="en">A · The chamber</span></h2>
+  <div class="row"><label>চেম্বার / ডাক্তারের বিভাগ <span class="en">Chamber / doctor's speciality</span></label><div class="fill"></div></div>
+  <p class="q">এখন সিরিয়াল কীভাবে দেওয়া হয়? <span class="en">How are serials given today?</span></p>
+  <div class="checks"><span>ফোনে <span class="en">by phone</span></span><span>ডেস্কে এসে <span class="en">at the desk</span></span><span>দুটোই <span class="en">both</span></span><span>অ্যাপ/ওয়েবসাইট <span class="en">app / website</span></span></div>
+  <div class="grid2" style="gap:0 6mm">
+    <div class="row"><label>পৌঁছে কতজন অপেক্ষায় <span class="en">Waiting on arrival</span></label><div class="short"></div></div>
+    <div class="row"><label>বসার জায়গা <span class="en">Seats</span></label><div class="short"></div></div>
+  </div>
+
+  <h2><span class="tag">খ</span> সহকারীকে প্রশ্ন <span class="en">B · Ask the assistant</span></h2>
+  <div class="grid2" style="gap:0 6mm">
+    <div class="row"><label>১. সন্ধ্যায় কতজন রোগী <span class="en">Patients per evening</span></label><div class="short"></div></div>
+    <div class="row"><label>২. দিনে সিরিয়ালের কল <span class="en">Serial calls a day</span></label><div class="short"></div></div>
+    <div class="row"><label>৩. ঘোষিত শুরুর সময় <span class="en">Announced start</span></label><div class="short"></div></div>
+    <div class="row"><label>আসল শুরুর সময় <span class="en">Actual start</span></label><div class="short"></div></div>
+  </div>
+  <div class="row"><label>৪. রোগী না এলে কী করেন? সন্ধ্যায় কতজন আসেন না? <span class="en">No-shows: what happens, how many?</span></label><div class="fill"></div></div>
+  <p class="q">৫. SerialKoi দেখার পর ব্যবহার করবেন? <span class="en">After the demo, would you use it?</span></p>
+  <div class="checks"><span>হ্যাঁ <span class="en">yes</span></span><span>হয়তো <span class="en">maybe</span></span><span>না <span class="en">no</span></span><span class="free" style="flex:1; display:flex; gap:2mm; align-items:flex-end">কেন? <span class="en">why?</span><i style="flex:1; border-bottom:.3mm solid var(--line); height:5mm"></i></span></div>
+  <p class="q">৬. ডিসেম্বরে বিনামূল্যে পাইলটে যোগ দেবেন? <span class="en">Join the free December pilot?</span></p>
+  <div class="checks"><span>হ্যাঁ <span class="en">yes</span></span><span>না <span class="en">no</span></span><span class="free" style="flex:1; display:flex; gap:2mm; align-items:flex-end">যোগাযোগ (অনুমতি নিয়ে) <span class="en">contact, with permission</span><i style="flex:1; border-bottom:.3mm solid var(--line); height:5mm"></i></span></div>
+
+  <h2><span class="tag">গ</span> রোগীর অপেক্ষা <span class="en">C · Patient waits (no names, no numbers)</span></h2>
+  <table>
+    <tr><th style="width:7mm">#</th><th>কয়টায় এসেছেন<br><span class="en">Arrived</span></th><th>ডাক পেয়েছেন<br><span class="en">Called in</span></th><th>মোট মিনিট<br><span class="en">Minutes</span></th><th>ফোন<br><span class="en">Phone</span></th><th>অপারেটর<br><span class="en">Operator</span></th></tr>
+    <tr><td>1</td><td></td><td></td><td></td><td>বাটন / স্মার্ট</td><td>BL · GP · Robi · TT</td></tr>
+    <tr><td>2</td><td></td><td></td><td></td><td>বাটন / স্মার্ট</td><td>BL · GP · Robi · TT</td></tr>
+    <tr><td>3</td><td></td><td></td><td></td><td>বাটন / স্মার্ট</td><td>BL · GP · Robi · TT</td></tr>
+    <tr><td>4</td><td></td><td></td><td></td><td>বাটন / স্মার্ট</td><td>BL · GP · Robi · TT</td></tr>
+    <tr><td>5</td><td></td><td></td><td></td><td>বাটন / স্মার্ট</td><td>BL · GP · Robi · TT</td></tr>
+    <tr><td>6</td><td></td><td></td><td></td><td>বাটন / স্মার্ট</td><td>BL · GP · Robi · TT</td></tr>
+  </table>
+  <p class="en" style="margin:1mm 0 0">If you leave before someone is called, write "still waiting at [time]" in "Called in". Circle the phone type and operator.</p>
+
+  <div class="grid2" style="margin-top:1mm; grid-template-columns: 1.35fr 1fr">
+    <div>
+      <h2><span class="tag">ঘ</span> উক্তি <span class="en">D · Quote (their exact words)</span></h2>
+      <div class="lines"><div></div><div></div></div>
+      <div class="checks" style="margin-top:2mm"><span>নাম ব্যবহারের অনুমতি আছে <span class="en">may use name</span></span></div>
+      <div class="row" style="margin-bottom:0"><label>নাম, পদ <span class="en">Name, role</span></label><div class="fill"></div></div>
+    </div>
+    <div>
+      <h2><span class="tag">ঙ</span> ছবি / ভিডিও <span class="en">E · Media</span></h2>
+      <div class="checks" style="flex-direction:column; gap:1.4mm"><span>অনুমতি নেওয়া হয়েছে <span class="en">permission given</span></span><span>অপেক্ষার জায়গা <span class="en">waiting area</span></span><span>দেয়ালে পোস্টারের জায়গা <span class="en">wall for poster</span></span><span>ভিডিও ১০ সেকেন্ড <span class="en">10-second video</span></span></div>
+    </div>
+  </div>
+
+  <div class="foot"><span class="warn">রোগীর নাম, নম্বর বা রোগ লিখবেন না · No patient names, numbers or illnesses</span><span>পাতা ২ / ২ · ৫ কপি প্রিন্ট করুন</span></div>
+</section>
+</body>
+</html>
