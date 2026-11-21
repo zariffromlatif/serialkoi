@@ -9,7 +9,7 @@ Blank Page Challenge).
 | Page | Placeholder | Who |
 |---|---|---|
 | 1 | Team name, members 2–4 and their roles | Team |
-| 1 | GitHub link, live demo link, video link | Zarif, after the server and repo are up |
+| 1 | Live demo link, video link (GitHub link done) | Zarif, after the server is up |
 | 2 | Field-check headline ("median wait X min") | From the chamber visits |
 | 3 | Field check table: chambers visited, patients per evening, waits, phone types, quote | Teammates, chamber visits by 26 Nov |
 | 8 | Quote from a doctor or assistant, with name and area (ask permission) | Teammates |
