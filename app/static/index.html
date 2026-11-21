@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SerialKoi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/app.css">
+<style>
+  .wrap { max-width: 880px; margin: 0 auto; padding: 32px 16px 56px; }
+  h1 { font-size: clamp(30px, 6vw, 48px); line-height: 1.1; margin: 28px 0 10px; letter-spacing: -.02em; }
+  h1 .bn { color: var(--teal); display: block; font-size: .7em; }
+  .lead { font-size: 18px; color: var(--muted); max-width: 640px; }
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 28px 0; }
+  .step { padding: 16px; }
+  .step b { display: block; font-size: 13px; color: var(--teal); margin-bottom: 4px; }
+  .links { display: flex; gap: 10px; flex-wrap: wrap; }
+  .links a { text-decoration: none; }
+  @media (max-width: 640px) { .steps { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><div class="brand-mark">স</div><div>সিরিয়াল কই<small>SerialKoi</small></div></div>
+  <h1><span class="bn">ডাক্তারের সিরিয়াল, ঘরে বসে</span>Wait at home, not in the chamber.</h1>
+  <p class="lead">SerialKoi gives patients a doctor's serial from any phone, including button phones, by USSD or SMS on Banglalink. It texts them when only a few patients are ahead, so nobody sits in a crowded chamber for three hours.</p>
+  <div class="steps">
+    <div class="card step"><b>1 · Book</b>Dial the code on the chamber poster. Pay Tk5 from your Banglalink balance and get a serial by SMS.</div>
+    <div class="card step"><b>2 · Wait anywhere</b>The assistant taps "Next" as patients go in. Wait times learn the doctor's real pace.</div>
+    <div class="card step"><b>3 · Come on time</b>An SMS arrives when 3 patients are ahead. Missed your turn? You're called next when you arrive.</div>
+  </div>
+  <div class="links">
+    <a class="btn" href="/sim">Open the live demo</a>
+    <a class="btn ghost" href="/assistant">Assistant login</a>
+    <a class="btn ghost" href="/display/4521">Waiting-room screen</a>
+  </div>
+</div>
+</body>
+</html>

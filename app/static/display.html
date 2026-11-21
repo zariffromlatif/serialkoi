@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SerialKoi Display</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/app.css">
+<style>
+  body { background: #0b1715; color: #f3efe6; min-height: 100vh; display: flex; flex-direction: column; }
+  .top { display: flex; justify-content: space-between; align-items: center; padding: 3vh 4vw 0; gap: 16px; }
+  .top .brand small { color: #9fb3ae; }
+  .doctor { text-align: right; }
+  .doctor b { display: block; font-size: clamp(18px, 2.4vw, 30px); }
+  .doctor span { color: #9fb3ae; font-size: clamp(13px, 1.4vw, 18px); }
+  main { flex: 1; display: grid; grid-template-columns: 1.3fr 1fr; gap: 3vw; padding: 3vh 4vw; align-items: stretch; }
+  .now { background: #12302b; border-radius: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3vh 2vw; }
+  .now .lbl { font-size: clamp(18px, 2.6vw, 34px); font-weight: 600; }
+  .now .lbl span { color: #9fb3ae; font-weight: 500; font-size: .7em; }
+  .now .num { font-size: clamp(120px, 22vw, 340px); font-weight: 700; line-height: 1; color: #ffc145; font-variant-numeric: tabular-nums; }
+  .now .num.empty { color: #3b5550; }
+  .side { display: flex; flex-direction: column; gap: 2vh; }
+  .side h2 { margin: 0; font-size: clamp(16px, 2vw, 26px); font-weight: 600; }
+  .side h2 span { color: #9fb3ae; font-weight: 500; font-size: .75em; }
+  .nexts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2vw; }
+  .nexts div { background: #12302b; border-radius: 16px; text-align: center; font-size: clamp(28px, 4.4vw, 64px); font-weight: 700; padding: 1.4vh 0; font-variant-numeric: tabular-nums; }
+  .nexts div:first-child { background: #ffc145; color: #0b1715; }
+  .info { background: #12302b; border-radius: 16px; padding: 2vh 1.6vw; font-size: clamp(14px, 1.5vw, 20px); color: #cfdcd8; }
+  .info b { color: #fff; }
+  .bar { background: #0d6b61; padding: 2.2vh 4vw; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; font-size: clamp(16px, 2vw, 28px); }
+  .bar .dial { font-weight: 700; font-size: 1.35em; letter-spacing: .03em; background: #fff; color: #08514a; padding: 2px 14px; border-radius: 10px; }
+  .closed { color: #ffb4a8; font-weight: 700; }
+  @media (max-width: 700px) { main { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="brand"><div class="brand-mark">স</div><div>সিরিয়াল কই<small>SerialKoi</small></div></div>
+  <div class="doctor"><b id="doctor">—</b><span id="chamber"></span></div>
+</div>
+<main>
+  <div class="now">
+    <div class="lbl">এখন চলছে <span>Now serving</span></div>
+    <div class="num empty" id="num">—</div>
+  </div>
+  <div class="side">
+    <h2>পরের সিরিয়াল <span>Next</span></h2>
+    <div class="nexts" id="nexts"></div>
+    <div class="info" id="info"></div>
+  </div>
+</main>
+<div class="bar">
+  <span>সিরিয়াল নিতে ডায়াল করুন · To get a serial, dial</span>
+  <span class="dial" id="dial">—</span>
+</div>
+<script>
+const code = location.pathname.split("/").filter(Boolean).pop();
+const $ = (id) => document.getElementById(id);
+async function tick() {
+  try {
+    const r = await fetch(`/api/public/${code}`); if (!r.ok) return;
+    const d = await r.json();
+    $("doctor").textContent = d.chamber.doctor;
+    $("chamber").textContent = `${d.chamber.name} · ${d.chamber.area}`;
+    $("dial").textContent = d.chamber.dial;
+    const n = $("num"); n.textContent = d.serving ?? "—"; n.classList.toggle("empty", d.serving == null);
+    $("nexts").innerHTML = d.next.length ? d.next.map((s) => `<div>${s}</div>`).join("") : "";
+    $("info").innerHTML = d.chamber.is_open
+      ? `লাইনে <b>${d.waiting}</b> জন · গড়ে <b>${d.chamber.avg_minutes}</b> মিনিট প্রতি রোগী<br><span style="opacity:.75">${d.waiting} waiting · about ${d.chamber.avg_minutes} min per patient. Your turn comes by SMS.</span>`
+      : `<span class="closed">আজ আর সিরিয়াল নেওয়া হচ্ছে না · Serials closed for today</span>`;
+  } catch (e) {}
+}
+tick(); setInterval(tick, 3000);
+</script>
+</body>
+</html>

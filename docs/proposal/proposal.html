@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SerialKoi: AppQuest 2.0 Proposal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 0; }
+  :root {
+    --teal: #0d6b61; --teal-dark: #08514a; --teal-soft: #e3f0ed; --amber: #ffc145; --amber-soft: #fdf1d8;
+    --ink: #12201d; --muted: #55635f; --line: #ddd8cc; --paper: #fffdf8; --red: #b4372b;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: #d9d5cb; font-family: "Hind Siliguri", system-ui, sans-serif; color: var(--ink); font-size: 9.6pt; line-height: 1.42;
+         -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { width: 210mm; height: 297mm; margin: 10mm auto; background: var(--paper); position: relative; overflow: hidden;
+          padding: 16mm 16mm 18mm; display: flex; flex-direction: column; box-shadow: 0 6px 30px rgba(0,0,0,.18); }
+  @media print { body { background: none; } .page { margin: 0; box-shadow: none; break-after: page; } }
+
+  .kicker { font-family: "Space Mono", monospace; font-size: 7.6pt; letter-spacing: .14em; text-transform: uppercase; color: var(--teal); font-weight: 700; }
+  h1 { font-size: 22pt; line-height: 1.1; margin: 1.5mm 0 4mm; letter-spacing: -.01em; }
+  h2 { font-size: 12pt; margin: 4.5mm 0 1.5mm; line-height: 1.2; }
+  h3 { font-size: 10pt; margin: 3mm 0 1mm; }
+  p { margin: 0 0 2.2mm; }
+  ul { margin: 0 0 2.2mm; padding-left: 4.5mm; }
+  li { margin: 0 0 1mm; }
+  b, strong { font-weight: 700; }
+  .muted { color: var(--muted); }
+  .mono { font-family: "Space Mono", monospace; font-size: .9em; }
+  code { font-family: "Space Mono", monospace; font-size: .86em; background: var(--teal-soft); border-radius: 1mm; padding: 0 1mm; }
+  mark.todo { background: var(--amber); color: var(--ink); border-radius: 1mm; padding: 0 1mm; font-weight: 600; }
+  .src { font-size: 6.8pt; color: var(--muted); vertical-align: super; line-height: 0; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; }
+  .card { background: #fff; border: .3mm solid var(--line); border-radius: 3mm; padding: 3.5mm 4mm; }
+  .card.teal { background: var(--teal-soft); border-color: #c6e0da; }
+  .card.amber { background: var(--amber-soft); border-color: #f4dfa6; }
+  .stat b { display: block; font-size: 17pt; line-height: 1.05; color: var(--teal-dark); }
+  .stat span { font-size: 8pt; color: var(--muted); line-height: 1.25; display: block; margin-top: .8mm; }
+  .stat span .src, .stat span.src { display: inline; margin: 0; font-size: 6.8pt; }
+  .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 4mm; }
+  .flow div { position: relative; padding: 3mm 4mm 3mm 0; }
+  .flow b { display: block; font-size: 9.6pt; color: var(--teal-dark); }
+  .flow .n { display: inline-grid; place-items: center; width: 7mm; height: 7mm; border-radius: 50%; background: var(--teal); color: #fff; font-weight: 700; font-size: 9pt; margin-bottom: 1.5mm; }
+  .flow div:not(:last-child)::after { content: ""; position: absolute; top: 6.5mm; left: 9mm; right: 2mm; border-top: .4mm dashed #9cc6bd; }
+  .flow span { font-size: 8.4pt; color: var(--muted); line-height: 1.3; display: block; }
+  table { width: 100%; border-collapse: collapse; font-size: 8.6pt; }
+  th, td { text-align: left; padding: 1.4mm 2mm; border-bottom: .25mm solid var(--line); vertical-align: top; }
+  th { font-size: 7.6pt; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 700; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  img.shot { width: 100%; display: block; border-radius: 2.5mm; border: .3mm solid var(--line); }
+  figcaption { font-size: 7.6pt; color: var(--muted); margin-top: 1.2mm; }
+  .foot { position: absolute; left: 16mm; right: 16mm; bottom: 8mm; display: flex; justify-content: space-between; font-size: 7.4pt; color: var(--muted);
+          border-top: .25mm solid var(--line); padding-top: 2mm; }
+  .sources { margin-top: auto; font-size: 6.9pt; color: var(--muted); line-height: 1.35; }
+  .sources ol { margin: 0; padding-left: 4mm; }
+  .sources li { margin: 0; }
+
+  /* cover */
+  .cover { padding: 0; }
+  .cover .top { background: var(--teal); color: #fff; padding: 18mm 16mm 14mm; position: relative; }
+  .cover .top::after { content: ""; position: absolute; right: -35mm; top: -35mm; width: 110mm; height: 110mm; border-radius: 50%; background: rgba(255,255,255,.07); }
+  .brand { display: flex; align-items: center; gap: 3mm; font-weight: 700; font-size: 11pt; }
+  .mark { width: 10mm; height: 10mm; border-radius: 2.6mm; background: #fff; color: var(--teal); display: grid; place-items: center; font-size: 15pt; font-weight: 700; }
+  .cover h1 { font-size: 34pt; margin: 9mm 0 1mm; color: #fff; }
+  .cover .bn { font-size: 15pt; opacity: .9; font-weight: 600; }
+  .cover .tag { font-size: 13pt; margin: 5mm 0 0; max-width: 150mm; line-height: 1.35; }
+  .cover .body { padding: 9mm 16mm 0; flex: 1; display: flex; flex-direction: column; }
+  .pill { display: inline-block; background: var(--teal-soft); color: var(--teal-dark); border-radius: 99mm; padding: .6mm 3mm; font-size: 8pt; font-weight: 700; margin: 0 1.5mm 1.5mm 0; }
+
+  /* phones + sms */
+  .phones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; }
+  .phone { background: #1f2327; border-radius: 5mm; padding: 3.5mm 3mm 4mm; }
+  .phone .scr { background: #dfe8d9; border-radius: 1.6mm; padding: 2.5mm; min-height: 38mm; font-family: "Space Mono", monospace; font-size: 7.1pt; line-height: 1.35; white-space: pre-wrap; color: #1b2618; }
+  .phone .cap { color: #c9d1cc; font-size: 7.3pt; margin-top: 2mm; text-align: center; }
+  .phone .op { display: block; font-size: 6.4pt; color: #6d7a69; margin-top: 1.5mm; }
+  .thread { display: grid; gap: 1.6mm; }
+  .bubble { border-radius: 3mm; padding: 1.8mm 3mm; font-size: 8.2pt; line-height: 1.32; max-width: 92%; }
+  .bubble.in { background: #fff; border: .3mm solid var(--line); }
+  .bubble.out { background: var(--teal); color: #fff; justify-self: end; }
+  .bubble small { display: block; font-size: 6.8pt; font-weight: 700; opacity: .7; margin-bottom: .4mm; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ 1. COVER -->
+<section class="page cover">
+  <div class="top">
+    <div class="brand"><div class="mark">স</div>সিরিয়াল কই · SerialKoi</div>
+    <h1>SerialKoi</h1>
+    <div class="bn">সিরিয়াল কই? · "Where's my serial?"</div>
+    <p class="tag">A doctor's serial from any phone, so patients wait at home instead of on a chamber bench. Built on Applink USSD, CaaS and SMS for Banglalink subscribers.</p>
+  </div>
+  <div class="body">
+    <div>
+      <span class="pill">AppQuest 2.0 · Track A</span><span class="pill">Theme 2 · Human Potential, Health &amp; Society</span><span class="pill">Category 04 · Healthcare &amp; MedTech</span>
+    </div>
+    <div class="grid2" style="margin-top:5mm; grid-template-columns: 1.15fr 1fr; align-items:start">
+      <div>
+        <h2 style="margin-top:0">Team <mark class="todo">[Team name]</mark></h2>
+        <table>
+          <tr><th>Member</th><th>Role</th></tr>
+          <tr><td>Zarif Latif <span class="muted">(team lead)</span></td><td>Backend, Applink integration, deployment</td></tr>
+          <tr><td><mark class="todo">[Member 2]</mark></td><td><mark class="todo">[Field research, chamber partnerships]</mark></td></tr>
+          <tr><td><mark class="todo">[Member 3]</mark></td><td><mark class="todo">[Business model, marketing]</mark></td></tr>
+          <tr><td><mark class="todo">[Member 4, optional]</mark></td><td><mark class="todo">[Video, design]</mark></td></tr>
+        </table>
+        <p class="muted" style="margin-top:2mm">All members are undergraduates at <b>BRAC University</b>, Dhaka.</p>
+        <h2>Links</h2>
+        <table>
+          <tr><td>Code</td><td><mark class="todo">[github.com/…/serialkoi]</mark></td></tr>
+          <tr><td>Live demo</td><td><mark class="todo">[https://demo.&lt;server&gt;.sslip.io/sim]</mark></td></tr>
+          <tr><td>Video</td><td><mark class="todo">[2-minute demo link]</mark></td></tr>
+        </table>
+      </div>
+      <figure style="margin:0">
+        <img class="shot" src="img/poster.png" alt="SerialKoi chamber poster">
+        <figcaption>The poster each chamber gets, generated by SerialKoi with its own dial code and a QR code to the live queue.</figcaption>
+      </figure>
+    </div>
+  </div>
+  <div class="foot"><span>SerialKoi · AppQuest 2.0 proposal</span><span>1 / 8</span></div>
+</section>
+
+<!-- ============================================================ 2. EXECUTIVE SUMMARY -->
+<section class="page">
+  <div class="kicker">Executive summary</div>
+  <h1>Turn three hours on a bench into one SMS</h1>
+  <p>Most Bangladeshis who see a specialist go to a private <b>chamber</b>: a doctor seeing patients in the evening after hospital duty. A serial number is taken by phone or at the desk, and then patients wait, often for hours, because nobody can tell them when their turn will come. Elderly patients, mothers with children and day labourers lose an evening and sometimes a day's wage.</p>
+  <p><b>SerialKoi</b> gives the patient a serial from any phone, including the button phones that 46% of Bangladeshis still use<span class="src">1</span>. They dial the code on the chamber poster, see who is being seen and the estimated wait, and pay a <b>Tk5</b> booking fee from their Banglalink balance. The chamber assistant taps <b>Next</b> on a simple web page as each patient goes in. When only three patients are ahead, SerialKoi texts the patient to come now.</p>
+
+  <div class="grid3" style="margin:3mm 0 4mm">
+    <div class="card teal stat"><b>3 APIs</b><span>USSD for booking, CaaS for the Tk5 fee, SMS for alerts and replies</span></div>
+    <div class="card teal stat"><b>0 apps</b><span>No smartphone, data or app install needed: works on any Banglalink handset</span></div>
+    <div class="card teal stat"><b>Tk5</b><span>Per booking, approved by the patient with an AppLink one-time code</span></div>
+  </div>
+
+  <div class="grid2">
+    <div>
+      <h2>What makes it different</h2>
+      <ul>
+        <li><b>Built for button phones.</b> Booking apps assume a smartphone and data; 41.6% of people in Bangladesh are not online<span class="src">2</span>.</li>
+        <li><b>Wait times that learn.</b> Estimates come from how long this doctor really spends per patient that evening, not a fixed guess.</li>
+        <li><b>Handles real chamber life.</b> No-shows are skipped and called first when they arrive; walk-ins and other operators are added by the assistant.</li>
+        <li><b>No hardware.</b> The assistant uses any phone browser; a TV display is optional.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Where it stands today</h2>
+      <ul>
+        <li>Working build: USSD menus, Tk5 charging with OTP, SMS alerts, assistant page, waiting-room screen, chamber poster.</li>
+        <li><b>34 automated tests</b>; requests checked against Applink's official mock server: <b>19 requests, 0 malformed</b>.</li>
+        <li>One-command server setup with HTTPS; Applink account submitted for approval.</li>
+        <li>Field check at <mark class="todo">[5]</mark> chambers near BRAC University: <mark class="todo">[key finding, e.g. median wait X min]</mark>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card amber" style="margin-top:3mm">
+    <b>Business in one line.</b> Revenue from the Tk5 booking fee shared with Applink, plus an optional <b>Chamber Plus</b> plan (Tk499/month). Plan: a 5-chamber pilot in December, <b>200 chambers in Dhaka by May 2027</b>, onboarded door to door with the poster as the main marketing channel.
+  </div>
+
+  <h2 style="margin-top:6mm">A booking, end to end</h2>
+  <div class="flow">
+    <div><span class="n">1</span><b>Dial</b><span>Code from the chamber poster, e.g. <code>*213*4521#</code>. See who is inside and the wait.</span></div>
+    <div><span class="n">2</span><b>Confirm</b><span>Press 1. The USSD session ends and AppLink sends a 6-digit payment code by SMS.</span></div>
+    <div><span class="n">3</span><b>Pay Tk5</b><span>Reply <code>SK &lt;code&gt;</code> or redial and press 4. The serial arrives by SMS.</span></div>
+    <div><span class="n">4</span><b>Come when called</b><span>An SMS when 3 patients are ahead, another when it's your turn.</span></div>
+  </div>
+
+  <div class="sources"><ol>
+    <li>bdnews24, 28 Nov 2025, on feature-phone use (ICT Division data).</li>
+    <li>Bangladesh Bureau of Statistics, via Bonik Barta, Apr 2026: share of people without internet access.</li>
+  </ol></div>
+  <div class="foot"><span>SerialKoi · AppQuest 2.0 proposal</span><span>2 / 8</span></div>
+</section>
+
+<!-- ============================================================ 3. PROBLEM -->
+<section class="page">
+  <div class="kicker">Problem statement</div>
+  <h1>The chamber waiting room</h1>
+  <p>Bangladesh has about <b>7 registered doctors per 10,000 people</b><span class="src">3</span>, and specialists are scarcer still. After hospital duty, a specialist may see around <b>100 patients in an evening</b> at a private chamber, according to one analysis<span class="src">4</span>. Serials are handed out by phone or at the desk, so the order is known but the time is not.</p>
+
+  <div class="grid3" style="margin:2mm 0 4mm">
+    <div class="card stat"><b>~2.5 h</b><span>Late start and queue for a patient booked for 7 pm at a Dhaka neurologist's chamber (reported case)<span class="src">5</span></span></div>
+    <div class="card stat"><b>78 min</b><span>Average wait to see a doctor at Dhaka Medical College Hospital OPD, for comparison<span class="src">6</span></span></div>
+    <div class="card stat"><b>46%</b><span>Of Bangladeshis still use feature (button) phones<span class="src">1</span></span></div>
+  </div>
+
+  <div class="grid2">
+    <div>
+      <h2>Who it hurts</h2>
+      <ul>
+        <li><b>Patients</b> sit for hours in crowded rooms, often sick, elderly or with children. Workers lose wages; people from outside the city lose the day.</li>
+        <li><b>Assistants</b> answer serial calls all day, manage a crowd at the door, and handle arguments over who came first.</li>
+        <li><b>Doctors</b> face a packed, tense room and patients who leave before their turn.</li>
+      </ul>
+      <h2>Why today's options fall short</h2>
+      <ul>
+        <li><b>Calling the assistant</b> gives a number but no time, and the line is busy at peak hours.</li>
+        <li><b>Hospital apps and web booking</b> need a smartphone, data and literacy in English menus, and they cover large hospitals, not a single doctor's chamber.</li>
+        <li><b>Token machines and displays</b> only help people already sitting in the room.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Field check <span class="muted" style="font-weight:500">(team visits, Nov 2026)</span></h2>
+      <div class="card amber">
+        <p style="margin-bottom:1.5mm"><b>Chambers visited:</b> <mark class="todo">[5]</mark> in <mark class="todo">[Merul Badda, Rampura, Aftabnagar]</mark></p>
+        <table>
+          <tr><th>What we measured</th><th class="num">Result</th></tr>
+          <tr><td>Patients per evening</td><td class="num"><mark class="todo">[x–y]</mark></td></tr>
+          <tr><td>Median wait after arriving</td><td class="num"><mark class="todo">[min]</mark></td></tr>
+          <tr><td>Longest wait seen</td><td class="num"><mark class="todo">[min]</mark></td></tr>
+          <tr><td>How serials are taken today</td><td class="num"><mark class="todo">[phone / desk]</mark></td></tr>
+          <tr><td>Patients with a button phone</td><td class="num"><mark class="todo">[x of y]</mark></td></tr>
+          <tr><td>Assistants who would use SerialKoi</td><td class="num"><mark class="todo">[x of 5]</mark></td></tr>
+        </table>
+        <p style="margin:2mm 0 0">"<mark class="todo">[Quote from a doctor or assistant]</mark>"</p>
+      </div>
+      <h2>The gap</h2>
+      <p>No service lets a patient on a basic phone <b>book a chamber serial and learn when to arrive</b>. We found web booking for individual hospitals and token displays, but nothing that runs over USSD and SMS for independent chambers.</p>
+    </div>
+  </div>
+
+  <div class="sources"><ol start="3">
+    <li>Prothom Alo English, 2025: 134,000 registered MBBS doctors for about 180 million people.</li>
+    <li>The Business Standard, analysis "Introduce referral system to reduce patient pressure" (tbsnews.net/analysis/…-399898).</li>
+    <li>The Business Standard, "Waiting for your doctor…" (tbsnews.net/node/399878): single reported case, not a survey.</li>
+    <li>Transparency International Bangladesh study, reported by bdnews24: "Wait 78 minutes to see a DMCH doctor" (public hospital OPD).</li>
+  </ol></div>
+  <div class="foot"><span>SerialKoi · AppQuest 2.0 proposal</span><span>3 / 8</span></div>
+</section>
+
+<!-- ============================================================ 4. SOLUTION -->
+<section class="page">
+  <div class="kicker">Proposed solution</div>
+  <h1>Book from any phone. Come when it's your turn.</h1>
+  <figure style="margin:0 0 3mm">
+    <img class="shot" src="img/sim.png" alt="Patient phone, assistant page and waiting-room screen">
+    <figcaption>The working demo: a Banglalink button phone (left), the assistant's page (middle) and the optional waiting-room screen (right), all updating live.</figcaption>
+  </figure>
+
+  <div class="grid3">
+    <div class="card teal">
+      <h3 style="margin-top:0">1 · Patient books</h3>
+      <p>Dials the code on the poster, for example <code>*213*4521#</code>. The menu shows the doctor, who is inside, how many are waiting and the estimated wait. Press 1, then approve the <b>Tk5</b> fee with the AppLink code that arrives by SMS. The serial is confirmed by SMS.</p>
+    </div>
+    <div class="card teal">
+      <h3 style="margin-top:0">2 · Assistant runs the queue</h3>
+      <p>On any phone browser, in Bangla: <b>Next patient</b>, <b>No-show</b>, <b>Add walk-in</b> (with optional phone), and <b>Arrived</b> for a late patient. The page shows every waiting serial, its source and its estimated time.</p>
+    </div>
+    <div class="card teal">
+      <h3 style="margin-top:0">3 · Patient arrives on time</h3>
+      <p>When 3 patients are ahead, SerialKoi texts "please come now" with the minutes left. When called, a "your turn" SMS. A missed turn gets an SMS, and the patient is called next when they tell the assistant they've arrived.</p>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-top:2mm">
+    <div>
+      <h2>Design decisions</h2>
+      <ul>
+        <li><b>USSD first.</b> Works on every handset, needs no data, and the chamber code can be typed straight into the dial string, so booking can take a single screen.</li>
+        <li><b>Wait estimates that learn.</b> Each "Next" records how long the consultation took; the estimate follows that doctor's real pace.</li>
+        <li><b>Short, plain English USSD and SMS.</b> USSD carries plain ASCII; every SMS fits in one 160-character part so the patient is never charged twice.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Fits how chambers already work</h2>
+      <ul>
+        <li><b>No change for walk-ins.</b> Phone bookings and desk serials share one numbered queue.</li>
+        <li><b>Other operators included.</b> A Grameenphone or Robi patient is added by the assistant like a walk-in.</li>
+        <li><b>Nothing to install or buy.</b> A printed poster, the assistant's phone, and optionally an old TV for the waiting-room screen.</li>
+        <li><b>Doctor stays in control.</b> One switch stops new bookings when the evening is full.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span>SerialKoi · AppQuest 2.0 proposal</span><span>4 / 8</span></div>
+</section>
+
+<!-- ============================================================ 5. TECHNICAL -->
+<section class="page">
+  <div class="kicker">Technical implementation</div>
+  <h1>A small, careful system</h1>
+
+  <svg viewBox="0 0 178 70" style="width:100%; height:auto; display:block; margin-bottom:3mm" font-family="Hind Siliguri, sans-serif">
+    <defs><marker id="a" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0 0 L6 3 L0 6 z" fill="#55635f"/></marker></defs>
+    <rect x="1" y="16" width="34" height="36" rx="3" fill="#fff" stroke="#ddd8cc" stroke-width=".4"/>
+    <text x="18" y="27" text-anchor="middle" font-size="4" font-weight="700" fill="#12201d">Patient</text>
+    <text x="18" y="33" text-anchor="middle" font-size="3" fill="#55635f">any Banglalink</text>
+    <text x="18" y="37" text-anchor="middle" font-size="3" fill="#55635f">phone</text>
+    <text x="18" y="45" text-anchor="middle" font-size="2.8" fill="#0d6b61">USSD · SMS · OTP</text>
+    <rect x="47" y="10" width="38" height="48" rx="3" fill="#fdf1d8" stroke="#f4dfa6" stroke-width=".4"/>
+    <text x="66" y="21" text-anchor="middle" font-size="4" font-weight="700" fill="#12201d">Applink</text>
+    <text x="66" y="27" text-anchor="middle" font-size="3" fill="#55635f">Banglalink / hSenid</text>
+    <text x="66" y="36" text-anchor="middle" font-size="2.8" fill="#12201d">/ussd/send</text>
+    <text x="66" y="40.5" text-anchor="middle" font-size="2.8" fill="#12201d">/sms/send</text>
+    <text x="66" y="45" text-anchor="middle" font-size="2.8" fill="#12201d">/caas/direct/debit</text>
+    <text x="66" y="49.5" text-anchor="middle" font-size="2.8" fill="#12201d">/caas/otp/verify</text>
+    <rect x="97" y="4" width="44" height="62" rx="3" fill="#e3f0ed" stroke="#0d6b61" stroke-width=".5"/>
+    <text x="119" y="13" text-anchor="middle" font-size="4" font-weight="700" fill="#08514a">SerialKoi server</text>
+    <text x="119" y="18.5" text-anchor="middle" font-size="2.8" fill="#55635f">FastAPI · SQLite · Caddy HTTPS</text>
+    <rect x="101" y="22" width="36" height="8" rx="1.5" fill="#fff"/><text x="119" y="27.2" text-anchor="middle" font-size="2.9" fill="#12201d">Callbacks: ack first, dedupe</text>
+    <rect x="101" y="32" width="36" height="8" rx="1.5" fill="#fff"/><text x="119" y="37.2" text-anchor="middle" font-size="2.9" fill="#12201d">Queue engine + wait estimate</text>
+    <rect x="101" y="42" width="36" height="8" rx="1.5" fill="#fff"/><text x="119" y="47.2" text-anchor="middle" font-size="2.9" fill="#12201d">Payment ledger (CaaS)</text>
+    <rect x="101" y="52" width="36" height="8" rx="1.5" fill="#fff"/><text x="119" y="57.2" text-anchor="middle" font-size="2.9" fill="#12201d">SMS alerts (background)</text>
+    <rect x="152" y="6" width="25" height="15" rx="2.5" fill="#fff" stroke="#ddd8cc" stroke-width=".4"/><text x="164.5" y="12.5" text-anchor="middle" font-size="3.2" font-weight="700" fill="#12201d">Assistant</text><text x="164.5" y="17" text-anchor="middle" font-size="2.6" fill="#55635f">phone browser</text>
+    <rect x="152" y="27" width="25" height="15" rx="2.5" fill="#fff" stroke="#ddd8cc" stroke-width=".4"/><text x="164.5" y="33.5" text-anchor="middle" font-size="3.2" font-weight="700" fill="#12201d">Display</text><text x="164.5" y="38" text-anchor="middle" font-size="2.6" fill="#55635f">waiting-room TV</text>
+    <rect x="152" y="48" width="25" height="15" rx="2.5" fill="#fff" stroke="#ddd8cc" stroke-width=".4"/><text x="164.5" y="54.5" text-anchor="middle" font-size="3.2" font-weight="700" fill="#12201d">Poster</text><text x="164.5" y="59" text-anchor="middle" font-size="2.6" fill="#55635f">A4, QR code</text>
+    <line x1="35.5" y1="34" x2="46.5" y2="34" stroke="#55635f" stroke-width=".5" marker-start="url(#a)" marker-end="url(#a)"/>
+    <line x1="85.5" y1="30" x2="96.5" y2="30" stroke="#55635f" stroke-width=".5" marker-end="url(#a)"/><text x="91" y="28.4" text-anchor="middle" font-size="2.3" fill="#55635f">callbacks</text>
+    <line x1="96.5" y1="40" x2="85.5" y2="40" stroke="#55635f" stroke-width=".5" marker-end="url(#a)"/><text x="91" y="43.6" text-anchor="middle" font-size="2.3" fill="#55635f">API calls</text>
+    <line x1="141.5" y1="14" x2="151.5" y2="14" stroke="#55635f" stroke-width=".5" marker-start="url(#a)" marker-end="url(#a)"/>
+    <line x1="141.5" y1="34.5" x2="151.5" y2="34.5" stroke="#55635f" stroke-width=".5" marker-end="url(#a)"/>
+    <line x1="141.5" y1="55.5" x2="151.5" y2="55.5" stroke="#55635f" stroke-width=".5" marker-end="url(#a)"/>
+  </svg>
+
+  <div class="grid2">
+    <div>
+      <h2>Stack</h2>
+      <table>
+        <tr><td><b>Backend</b></td><td>Python 3, FastAPI, SQLite (WAL mode)</td></tr>
+        <tr><td><b>Web pages</b></td><td>Plain HTML, CSS and JavaScript; Bangla and English; no build step</td></tr>
+        <tr><td><b>Server</b></td><td>Ubuntu, Caddy (automatic HTTPS), systemd; one setup script; daily database backups</td></tr>
+        <tr><td><b>Modes</b></td><td><code>live</code> calls api.applink.com.bd; <code>sim</code> runs every SMS, USSD screen and charge locally for demos</td></tr>
+      </table>
+      <h2>Wait-time estimate</h2>
+      <p>Each time the assistant taps Next, the real consultation length <i>d</i> updates the chamber's average: <span class="mono">avg = 0.7·avg + 0.3·d</span>, ignoring taps under 1 minute or over 45. A patient with <i>n</i> people ahead waits about <span class="mono">(n + ½)·avg</span> minutes when someone is already inside.</p>
+      <h2>Queue rules</h2>
+      <p>One active serial per phone per chamber per day; walk-ins and phone bookings share numbering; a recalled no-show goes to the front; alerts fire once per patient.</p>
+    </div>
+    <div>
+      <h2>Reliability and safety</h2>
+      <ul>
+        <li><b>Callbacks:</b> answered with <code>S1000</code> immediately, work done afterwards; repeats ignored by <code>requestId</code>; malformed bodies and other apps' payloads discarded.</li>
+        <li><b>Hidden endpoints:</b> callbacks live under a random secret path, with an optional Applink IP allowlist.</li>
+        <li><b>Assistant login:</b> chamber code + PIN; PINs stored as HMAC hashes; signed session tokens.</li>
+        <li><b>Privacy:</b> live logs keep only the last 3 digits of a phone number; payment codes are blanked before logging.</li>
+        <li><b>USSD:</b> screens kept under 160 characters; sessions expire after 10 minutes.</li>
+      </ul>
+      <h2>Testing</h2>
+      <div class="grid2" style="gap:3mm">
+        <div class="card teal stat"><b>34</b><span>automated tests: queue, USSD, SMS, payments, callbacks, poster</span></div>
+        <div class="card teal stat"><b>19 / 0</b><span>requests checked by Applink's official mock / malformed</span></div>
+      </div>
+      <p class="muted" style="margin-top:2mm">Mock scenarios covered: published samples, unusual responses, wrong key (E1313), wrong code (E1850), expired code (E1851), low balance (E1326), timeout.</p>
+    </div>
+  </div>
+  <div class="foot"><span>SerialKoi · AppQuest 2.0 proposal</span><span>5 / 8</span></div>
+</section>
+
+<!-- ============================================================ 6. APPLINK INTEGRATION -->
+<section class="page">
+  <div class="kicker">Applink integration</div>
+  <h1>Three APIs, one booking</h1>
+  <table style="margin-bottom:3mm">
+    <tr><th>API</th><th>Endpoints</th><th>What SerialKoi uses it for</th></tr>
+    <tr><td><b>USSD</b></td><td><code>/ussd/receive</code> (callback), <code>/ussd/send</code></td><td>Booking menu, one-step dial <code>*code*chamber#</code>, status, cancel, entering the payment code on redial</td></tr>
+    <tr><td><b>CaaS</b></td><td><code>/caas/direct/debit</code>, <code>/caas/otp/verify</code>, <code>/caas/chargingNotification</code> (callback)</td><td>Tk5 booking fee from the patient's mobile balance, approved by an AppLink one-time code</td></tr>
+    <tr><td><b>SMS</b></td><td><code>/sms/send</code>, <code>/sms/receive</code> and <code>/sms/report</code> (callbacks)</td><td>Confirmation, "3 ahead, come now", "your turn", missed turn; commands <code>SK 4521</code>, <code>SK &lt;code&gt;</code>, <code>SK STATUS</code>, <code>SK CANCEL</code></td></tr>
+  </table>
+
+  <h2>User flow: booking a serial</h2>
+  <div class="phones">
+    <div class="phone"><div class="scr">Dr. Farhana Rahman
+Merul Badda Medicine Chamber
+Now serving: 2
+Waiting: 5 (~38 min)
+Fee: Tk5
+1. Confirm
+0. Exit<span class="op">ussdOperation: mt-cont</span></div><div class="cap">① Dial <b>*213*4521#</b></div></div>
+    <div class="phone"><div class="scr">To pay Tk5, AppLink will SMS you a 6-digit code.
+Reply by SMS: SK &lt;code&gt;
+or dial *213# and press 4.<span class="op">ussdOperation: mt-fin, then /caas/direct/debit</span></div><div class="cap">② Press <b>1</b>: session ends, charge starts</div></div>
+    <div class="phone"><div class="scr">Serial 8 confirmed!
+Dr. Farhana Rahman
+5 ahead, ~38 min.
+We will SMS you when your turn is near.<span class="op">after /caas/otp/verify → S1000</span></div><div class="cap">③ Redial, press <b>4</b>, enter code</div></div>
+  </div>
+
+  <div class="grid2" style="margin-top:4mm; grid-template-columns: 1fr 1.05fr">
+    <div>
+      <h2 style="margin-top:0">The SMS side of the same booking</h2>
+      <div class="thread">
+        <div class="bubble in"><small>AppLink</small>482913: your code to pay Tk5 to SerialKoi. <i style="opacity:.7">(wording set by AppLink)</i></div>
+        <div class="bubble out"><small>Patient → SK</small>SK 482913</div>
+        <div class="bubble in"><small>SerialKoi</small>Serial 8 confirmed - Dr. Farhana Rahman. Now serving 2. About 38 min. We will SMS when 3 are ahead.</div>
+        <div class="bubble in"><small>SerialKoi · later that evening</small>Serial 8 - 3 patients ahead of you. Please come to Dr. Farhana Rahman's chamber now (~24 min).</div>
+        <div class="bubble in"><small>SerialKoi</small>It is your turn now - serial 8, Dr. Farhana Rahman. Please go in.</div>
+      </div>
+    </div>
+    <div>
+      <h2 style="margin-top:0">Following Applink's own rules</h2>
+      <p>We checked SerialKoi against Applink's official <i>Applink-as-a-skill</i> references and changed it where they differ:</p>
+      <ul>
+        <li><b>No charging inside a USSD session.</b> The menu ends first; the patient can't read an SMS while it is open.</li>
+        <li><b>Ledger before money.</b> The payment row and <code>externalTrxId</code> are saved before <code>/caas/direct/debit</code>.</li>
+        <li><b>Never re-charge.</b> A timeout is marked unknown and settled by the charging notification, never retried.</li>
+        <li><b>Right outcome per code:</b> wrong code (E1850) re-prompts, expired (E1851) and low balance (E1326) end the payment with a clear SMS.</li>
+        <li><b>Full payment only.</b> A notification books a serial only if <code>paidAmount</code> covers the fee and nothing is due.</li>
+        <li><b>Number masking off</b> so walk-ins typed by the assistant match the subscriber's address.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span>SerialKoi · AppQuest 2.0 proposal</span><span>6 / 8</span></div>
+</section>
+
+<!-- ============================================================ 7. BUSINESS -->
+<section class="page">
+  <div class="kicker">Revenue model · 6-month plan · marketing</div>
+  <h1>Paid per booking, grown chamber by chamber</h1>
+
+  <div class="grid2" style="grid-template-columns: 1fr 1fr">
+    <div>
+      <h2 style="margin-top:0">Revenue streams</h2>
+      <table>
+        <tr><th>Stream</th><th>Price</th><th>Paid by</th></tr>
+        <tr><td><b>Booking fee</b> via Applink CaaS, shared with Applink</td><td>Tk5 / booking</td><td>Patient</td></tr>
+        <tr><td><b>Chamber Plus</b>: TV screen, doctor's daily report, multi-doctor clinics, own SMS text</td><td>Tk499 / month</td><td>Chamber</td></tr>
+        <tr><td><b>Clinic licence</b> (from month 5): diagnostic centres and multi-doctor clinics</td><td>Tk2,000+ / month</td><td>Clinic</td></tr>
+      </table>
+      <p class="muted" style="margin-top:2mm">Basic SerialKoi stays free for chambers: the booking fee pays for it, so adoption has no barrier.</p>
+    </div>
+    <div>
+      <h2 style="margin-top:0">Unit economics per chamber (projection)</h2>
+      <table>
+        <tr><td>Patients per evening</td><td class="num">40 <span class="muted">(A)</span></td></tr>
+        <tr><td>Share booking by phone</td><td class="num">25% <span class="muted">(A)</span></td></tr>
+        <tr><td>Bookings per month (26 days)</td><td class="num">260</td></tr>
+        <tr><td>Booking fees collected</td><td class="num">Tk1,300</td></tr>
+        <tr><td>SerialKoi share at 50% <span class="muted">(A)</span></td><td class="num">Tk650</td></tr>
+        <tr><td>Server cost per chamber at 200 chambers</td><td class="num">≈ Tk4</td></tr>
+      </table>
+      <p class="muted" style="margin-top:2mm">(A) = assumption, to be checked in the pilot. Applink's revenue share is set by agreement; 50% is the pricing calculator's default.</p>
+    </div>
+  </div>
+
+  <h2>6-month plan (Dec 2026 to May 2027)</h2>
+  <table>
+    <tr><th>Month</th><th>Goal</th><th class="num">Chambers</th><th class="num">Bookings / month</th><th class="num">Revenue / month*</th></tr>
+    <tr><td>1 · Dec</td><td>Live on Applink; pilot in Merul Badda; measure waits before and after</td><td class="num">5</td><td class="num">650</td><td class="num">Tk1,600</td></tr>
+    <tr><td>2 · Jan</td><td>Badda, Rampura, Banasree; Bangla SMS; doctor's daily summary</td><td class="num">20</td><td class="num">4,200</td><td class="num">Tk10,500</td></tr>
+    <tr><td>3 · Feb</td><td>Pharmacy partners near chambers; first Chamber Plus customers</td><td class="num">50</td><td class="num">11,000</td><td class="num">Tk30,000</td></tr>
+    <tr><td>4 · Mar</td><td>Mirpur and Uttara; part-time field agent paid per chamber</td><td class="num">100</td><td class="num">23,000</td><td class="num">Tk62,500</td></tr>
+    <tr><td>5 · Apr</td><td>First diagnostic centres; clinic licence</td><td class="num">150</td><td class="num">36,000</td><td class="num">Tk101,500</td></tr>
+    <tr><td>6 · May</td><td>One district town pilot; profitable on running costs</td><td class="num">200</td><td class="num">52,000</td><td class="num">Tk148,000</td></tr>
+  </table>
+  <p class="muted" style="margin:1.5mm 0 0">*SerialKoi's share of booking fees at the assumptions above, ramping per chamber, plus Chamber Plus (10% of chambers from month 3) and clinic licences (2 in April, 4 in May). Projections, not results.</p>
+
+  <div class="grid2" style="margin-top:2mm">
+    <div>
+      <h2>Promotion and marketing</h2>
+      <ul>
+        <li><b>Door to door.</b> We visit chambers in the evening, show the demo, set up the chamber in 10 minutes and leave posters.</li>
+        <li><b>The poster is the ad.</b> Every chamber wall teaches patients to dial; every booking SMS carries the name.</li>
+        <li><b>Assistants as champions.</b> Fewer phone calls is the pitch; a small monthly reward for the most bookings.</li>
+        <li><b>Doctor to doctor.</b> Referrals between doctors who share hospitals and chamber buildings.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Partnerships</h2>
+      <ul>
+        <li><b>Applink and Banglalink:</b> Applink app-store listing; area SMS campaigns to subscribers near pilot chambers, if Banglalink agrees.</li>
+        <li><b>Pharmacies</b> beside chambers display the QR code and dial code.</li>
+        <li><b>Local Facebook groups</b> for each area, with short videos in Bangla.</li>
+      </ul>
+      <p><b>Costs:</b> server about Tk700/month; posters Tk20 each; field travel. The team works without salary for the six months.</p>
+    </div>
+  </div>
+  <div class="foot"><span>SerialKoi · AppQuest 2.0 proposal</span><span>7 / 8</span></div>
+</section>
+
+<!-- ============================================================ 8. BLANK PAGE -->
+<section class="page">
+  <div class="kicker">Blank Page Challenge</div>
+  <h1>It already works. Here is the proof.</h1>
+  <div class="grid2" style="grid-template-columns: .82fr 1.18fr; align-items:start">
+    <figure style="margin:0">
+      <img class="shot" src="img/assistant.png" alt="Assistant page">
+      <figcaption>The assistant's page on a phone: who is inside, one-tap Next and No-show, walk-ins, and every waiting serial with its time.</figcaption>
+    </figure>
+    <div>
+      <figure style="margin:0 0 3mm">
+        <img class="shot" src="img/display.png" alt="Waiting-room screen">
+        <figcaption>Waiting-room screen: the serial being seen, the next five, and the dial code for anyone who walks in.</figcaption>
+      </figure>
+      <div class="grid2" style="gap:3mm">
+        <div class="card teal stat"><b>~1 min</b><span>to book from a button phone: one dial, one key, one code (our estimate)</span></div>
+        <div class="card teal stat"><b>~10 min</b><span>to set up a new chamber: code, PIN, printed poster (our estimate)</span></div>
+      </div>
+      <h2>Impact if the plan holds</h2>
+      <p>At 52,000 bookings a month (month 6), and if each booking saves the patient <b>about 1.5 hours</b> of waiting (assumption to verify in the pilot), SerialKoi would return roughly <b>78,000 hours a month</b> to patients and their families. It supports <b>UN SDG 3</b> (good health and well-being) by making specialist care easier to reach for people without smartphones.</p>
+    </div>
+  </div>
+
+  <div class="grid3" style="margin-top:3mm">
+    <div class="card">
+      <h3 style="margin-top:0">From the field</h3>
+      <p>"<mark class="todo">[Quote from a doctor or chamber assistant, with permission]</mark>"</p>
+      <p class="muted">— <mark class="todo">[Name, chamber, area]</mark></p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">After AppQuest</h3>
+      <ul>
+        <li>Bangla SMS once Unicode delivery is confirmed</li>
+        <li>Multi-doctor clinics and diagnostic centres</li>
+        <li>Doctor's evening summary by SMS</li>
+        <li>Government hospital OPD tickets by USSD</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">How we built it</h3>
+      <p>Built during AppQuest 2.0 (from 20 Nov 2026) in Python and FastAPI. We used <b>Claude (Anthropic)</b> as a coding assistant, and Applink's official <b>Applink-as-a-skill</b> references and mock server to check the integration. No code was written before the hackathon.</p>
+    </div>
+  </div>
+  <div class="foot"><span>SerialKoi · AppQuest 2.0 proposal</span><span>8 / 8</span></div>
+</section>
+
+</body>
+</html>

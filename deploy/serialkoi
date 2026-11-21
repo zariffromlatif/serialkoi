@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Server helper (installed to /usr/local/bin/serialkoi by setup.sh). Run with sudo.
+#   serialkoi check              settings, public IP and callback reachability
+#   serialkoi sms 019XXXXXXXX    send a real test SMS through Applink
+#   serialkoi inbox [n]          last messages and callbacks seen by the live app
+#   serialkoi logs [live|demo]   follow the app log
+#   serialkoi restart            restart both apps
+set -euo pipefail
+cmd="${1:-help}"
+case "$cmd" in
+  logs) exec journalctl -u "serialkoi@${2:-live}" -f -n 100 ;;
+  restart) systemctl restart serialkoi@live serialkoi@demo && echo "Restarted." ;;
+  check|sms|inbox)
+    exec sudo -u serialkoi /opt/serialkoi/.venv/bin/python /opt/serialkoi/scripts/live_check.py \
+         --env /etc/serialkoi/live.env "$@" ;;
+  *) sed -n '2,8p' "$0" | sed 's/^# \{0,1\}//' ;;
+esac

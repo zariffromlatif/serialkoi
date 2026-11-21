@@ -1,0 +1,21 @@
+[Unit]
+Description=SerialKoi (%i)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=serialkoi
+Group=serialkoi
+WorkingDirectory=/opt/serialkoi
+EnvironmentFile=/etc/serialkoi/%i.env
+ExecStart=/opt/serialkoi/.venv/bin/uvicorn server:app --host 127.0.0.1 --port ${SK_PORT} --proxy-headers --forwarded-allow-ips 127.0.0.1
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/serialkoi
+
+[Install]
+WantedBy=multi-user.target

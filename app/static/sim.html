@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SerialKoi Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/app.css">
+<style>
+  body { min-height: 100vh; }
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 20px; border-bottom: 1px solid var(--line); background: var(--card); flex-wrap: wrap; }
+  .bar .tag { font-size: 12px; font-weight: 700; color: #8a5a00; background: var(--amber-soft); padding: 3px 10px; border-radius: 999px; }
+  .bar .tools { display: flex; gap: 8px; flex-wrap: wrap; }
+  .stage { display: grid; grid-template-columns: 360px 440px minmax(320px, 1fr); gap: 20px; padding: 20px; align-items: start; }
+  .col h3 { margin: 0 0 8px; font-size: 14px; display: flex; gap: 8px; align-items: baseline; }
+  .col h3 .en { font-weight: 500; }
+  .frame { width: 100%; border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg); box-shadow: var(--shadow); display: block; }
+  #assistantFrame { height: 860px; }
+  #displayFrame { height: 420px; }
+  .note { font-size: 13px; color: var(--muted); margin-top: 10px; line-height: 1.5; }
+  .note code { background: #ebe7dd; padding: 1px 5px; border-radius: 5px; font-size: 12px; }
+
+  /* ---------- the phone ---------- */
+  .who { display: flex; gap: 8px; margin-bottom: 10px; }
+  .who select { flex: 1; }
+  .phone { width: 300px; margin: 0 auto; background: linear-gradient(160deg, #2b2f33, #15181b); border-radius: 38px 38px 46px 46px; padding: 26px 18px 22px; box-shadow: 0 18px 40px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.08); }
+  .speaker { width: 60px; height: 6px; border-radius: 3px; background: #0b0d0f; margin: 0 auto 14px; }
+  .screen { position: relative; height: 300px; border-radius: 10px; background: #dfe8d9; color: #1b2618; font-family: "Space Mono", ui-monospace, monospace; font-size: 13.5px; line-height: 1.35; overflow: hidden; box-shadow: inset 0 2px 6px rgba(0,0,0,.25); display: flex; flex-direction: column; }
+  .status { display: flex; justify-content: space-between; padding: 5px 9px; font-size: 11px; background: rgba(27,38,24,.08); }
+  .view { flex: 1; padding: 10px 11px; display: flex; flex-direction: column; min-height: 0; }
+  .soft { display: flex; justify-content: space-between; padding: 5px 10px; font-size: 12px; font-weight: 700; border-top: 1px solid rgba(27,38,24,.18); }
+  .soft span { cursor: pointer; }
+  .home-dial { margin-top: auto; font-size: 26px; text-align: right; word-break: break-all; min-height: 36px; }
+  .home-hint { font-size: 12px; opacity: .7; }
+  .ussd-text { white-space: pre-wrap; flex: 1; overflow-y: auto; }
+  .ussd-input { margin-top: 6px; border: 1.5px solid #1b2618; border-radius: 4px; background: #eef4ea; font-family: inherit; font-size: 15px; padding: 3px 6px; width: 100%; }
+  .loading { margin: auto; text-align: center; }
+  .inbox { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+  .msg { border-bottom: 1px dashed rgba(27,38,24,.3); padding-bottom: 5px; font-size: 12.5px; }
+  .msg.me { text-align: right; opacity: .75; }
+  .msg .from { font-weight: 700; font-size: 11px; }
+  .compose { display: flex; gap: 4px; margin-top: 6px; }
+  .compose input { flex: 1; min-width: 0; }
+  .banner { position: absolute; left: 6px; right: 6px; top: 6px; background: #1b2618; color: #e6f0e0; border-radius: 8px; padding: 7px 9px; font-size: 12px; transform: translateY(-130%); transition: transform .25s ease; cursor: pointer; z-index: 3; }
+  .banner.show { transform: translateY(0); }
+  .banner b { display: block; font-size: 11px; color: #b5d6a7; }
+
+  .keys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-top: 18px; }
+  .key { height: 42px; border-radius: 14px; border: 0; background: linear-gradient(#3b4046, #2a2e33); color: #f2f2f2; font-weight: 700; font-size: 18px; box-shadow: 0 2px 0 #0d0f11; font-family: var(--font); }
+  .key small { display: block; font-size: 9px; font-weight: 500; opacity: .6; line-height: 1; margin-top: -2px; }
+  .key:active { transform: translateY(1px); box-shadow: 0 1px 0 #0d0f11; }
+  .key.call { background: linear-gradient(#2f9e57, #1f7a40); }
+  .key.end { background: linear-gradient(#cf4a3c, #a2342a); }
+  .key.mid { font-size: 13px; }
+  .label { text-align: center; color: #8c9196; font-size: 11px; margin-top: 12px; letter-spacing: .12em; }
+  @media (max-width: 1240px) { .stage { grid-template-columns: 360px 1fr; } .col.display { grid-column: 1 / -1; } }
+  @media (max-width: 820px) { .stage { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="bar">
+  <div class="brand"><div class="brand-mark">স</div><div>SerialKoi live demo<small>Simulation mode: SMS, USSD and charging run locally, shaped exactly like Applink's API</small></div></div>
+  <div class="tools">
+    <span class="tag">SIMULATION</span>
+    <button class="btn small ghost" id="fillBtn" type="button">Add 6 sample patients</button>
+    <button class="btn small ghost" id="resetBtn" type="button">Reset demo</button>
+  </div>
+</div>
+
+<div class="stage">
+  <div class="col">
+    <h3>1 · Patient's phone <span class="en">any button phone on Banglalink</span></h3>
+    <div class="who">
+      <select class="input" id="phoneSel">
+        <option value="01911000001">Patient A · 01911-000001</option>
+        <option value="01911000002">Patient B · 01911-000002</option>
+        <option value="01411000003">Patient C · 01411-000003</option>
+      </select>
+    </div>
+    <div class="phone">
+      <div class="speaker"></div>
+      <div class="screen">
+        <div class="banner" id="banner"><b id="bannerFrom">AppLink</b><span id="bannerText"></span></div>
+        <div class="status"><span>Banglalink ▂▄▆</span><span id="clock"></span></div>
+        <div class="view" id="view"></div>
+        <div class="soft"><span id="softL">Messages</span><span id="softR">Clear</span></div>
+      </div>
+      <div class="keys" id="keys"></div>
+      <div class="label">SERIALKOI DEMO</div>
+    </div>
+    <p class="note">Dial <code id="dialHint">*213*4521#</code> and press the green key. The SMS that AppLink would send (the payment code, the "come now" alert) shows up on this phone.</p>
+  </div>
+
+  <div class="col">
+    <h3>2 · Assistant's phone <span class="en">web page at the chamber</span></h3>
+    <iframe class="frame" id="assistantFrame" src="/assistant?code=4521&pin=2468" title="Assistant"></iframe>
+  </div>
+
+  <div class="col display">
+    <h3>3 · Waiting-room screen <span class="en">optional TV at the chamber</span></h3>
+    <iframe class="frame" id="displayFrame" src="/display/4521" title="Display"></iframe>
+    <p class="note">Demo chamber code <code>4521</code>, assistant PIN <code>2468</code>. Callbacks for the live app: <code>POST /ussd/receive</code>, <code>/sms/receive</code>, <code>/sms/report</code>, <code>/caas/chargingNotification</code>.</p>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const state = { mode: "home", dial: "", ussdText: "", ussdOp: "", input: "", sessionId: null, inbox: [], lastId: 0, compose: "" };
+const phone = () => $("phoneSel").value;
+
+/* ---------- keypad ---------- */
+const PHONE_ICON = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="vertical-align:middle"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>`;
+const KEYS = [["1", ""], ["2", "abc"], ["3", "def"], ["4", "ghi"], ["5", "jkl"], ["6", "mno"], ["7", "pqrs"], ["8", "tuv"], ["9", "wxyz"], ["*", ""], ["0", "+"], ["#", ""]];
+$("keys").innerHTML =
+  `<button class="key call" data-k="call" type="button" aria-label="Call">${PHONE_ICON}</button><button class="key mid" data-k="back" type="button" aria-label="Delete">⌫</button><button class="key end" data-k="end" type="button" aria-label="End">${PHONE_ICON.replace("<svg", '<svg style="transform:rotate(135deg)"')}</button>` +
+  KEYS.map(([k, s]) => `<button class="key" data-k="${k}" type="button">${k}<small>${s || "&nbsp;"}</small></button>`).join("");
+$("keys").onclick = (e) => { const k = e.target.closest("[data-k]")?.dataset.k; if (k) press(k); };
+document.addEventListener("keydown", (e) => {
+  if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+  if (/^[0-9*#]$/.test(e.key)) press(e.key);
+  else if (e.key === "Enter") press("call");
+  else if (e.key === "Backspace") press("back");
+  else if (e.key === "Escape") press("end");
+});
+
+function press(k) {
+  if (k === "call") return primary();
+  if (k === "end") return endAll();
+  const field = state.mode === "home" ? "dial" : state.mode === "ussd" && state.ussdOp === "mt-cont" ? "input" : state.mode === "inbox" ? "compose" : null;
+  if (!field) return;
+  state[field] = k === "back" ? state[field].slice(0, -1) : state[field] + k;
+  render();
+}
+
+async function primary() {
+  if (state.mode === "home" && state.dial) {
+    if (!/^\*.*#$/.test(state.dial)) return flash("Dial a USSD code like *213*4521#");
+    state.sessionId = String(Date.now());
+    return ussd("mo-init", state.dial);
+  }
+  if (state.mode === "ussd") {
+    if (state.ussdOp === "mt-fin") return endAll();
+    if (state.input) return ussd("mo-cont", state.input);
+  }
+  if (state.mode === "inbox" && state.compose.trim()) return sendSms();
+}
+
+function endAll() { state.mode = "home"; state.dial = ""; state.input = ""; state.sessionId = null; render(); }
+
+async function ussd(op, message) {
+  state.mode = "loading"; render();
+  try {
+    const r = await fetch("/sim/ussd", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone: phone(), sessionId: state.sessionId, ussdOperation: op, message }) });
+    const d = await r.json();
+    await new Promise((res) => setTimeout(res, 350)); // network feel
+    state.mode = "ussd"; state.ussdText = d.message; state.ussdOp = d.ussdOperation; state.input = "";
+  } catch (e) { state.mode = "ussd"; state.ussdText = "Connection problem or invalid MMI code."; state.ussdOp = "mt-fin"; }
+  render();
+  setTimeout(() => $("ussdInput")?.focus(), 20);
+}
+
+async function sendSms() {
+  const text = state.compose.trim(); state.compose = "";
+  state.inbox.push({ me: true, body: text }); render();
+  await fetch("/sim/sms", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: phone(), message: text }) });
+  poll();
+}
+
+/* ---------- screen ---------- */
+function render() {
+  const v = $("view");
+  if (state.mode === "home") {
+    v.innerHTML = `<div class="home-hint">Dial the chamber's code, then press the green key</div><div class="home-dial">${esc(state.dial) || "&nbsp;"}</div>`;
+    $("softL").textContent = `Messages${unread() ? " (" + unread() + ")" : ""}`; $("softR").textContent = "Clear";
+  } else if (state.mode === "loading") {
+    v.innerHTML = `<div class="loading">USSD code running…</div>`; $("softL").textContent = ""; $("softR").textContent = "";
+  } else if (state.mode === "ussd") {
+    const cont = state.ussdOp === "mt-cont";
+    v.innerHTML = `<div class="ussd-text">${esc(state.ussdText)}</div>` + (cont ? `<input class="ussd-input" id="ussdInput" value="${esc(state.input)}" inputmode="numeric" autocomplete="off">` : "");
+    $("softL").textContent = cont ? "Send" : "OK"; $("softR").textContent = cont ? "Cancel" : "";
+    const inp = $("ussdInput");
+    if (inp) { inp.oninput = () => (state.input = inp.value); inp.onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); primary(); } if (e.key === "Escape") endAll(); }; }
+  } else if (state.mode === "inbox") {
+    state.inbox.forEach((m) => (m.read = true));
+    v.innerHTML = `<div class="inbox" id="inbox">${state.inbox.length ? state.inbox.map((m) =>
+      `<div class="msg ${m.me ? "me" : ""}"><div class="from">${m.me ? "You → SK" : m.kind === "otp" ? "AppLink" : "SerialKoi"}</div>${esc(m.body)}</div>`).join("") : "No messages"}</div>
+      <div class="compose"><input class="ussd-input" id="composeInput" placeholder="SK STATUS" value="${esc(state.compose)}" autocomplete="off"></div>`;
+    $("softL").textContent = "Send"; $("softR").textContent = "Back";
+    const box = $("inbox"); box.scrollTop = box.scrollHeight;
+    const ci = $("composeInput"); ci.oninput = () => (state.compose = ci.value); ci.onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); primary(); } };
+  }
+}
+const unread = () => state.inbox.filter((m) => !m.me && !m.read).length;
+$("softL").onclick = () => { if (state.mode === "home") { state.mode = "inbox"; render(); } else primary(); };
+$("softR").onclick = () => { if (state.mode === "home") { state.dial = ""; render(); } else endAll(); };
+$("banner").onclick = () => { $("banner").classList.remove("show"); if (state.mode !== "ussd") { state.mode = "inbox"; render(); } };
+
+function flash(text, from) {
+  $("bannerFrom").textContent = from || "Phone"; $("bannerText").textContent = text;
+  const b = $("banner"); b.classList.add("show"); clearTimeout(flash._t); flash._t = setTimeout(() => b.classList.remove("show"), 5000);
+}
+
+/* ---------- inbox polling ---------- */
+async function poll() {
+  try {
+    const p = phone();
+    const r = await fetch(`/sim/inbox?phone=${p}&after=${state.lastId}`); const d = await r.json();
+    if (p !== phone()) return;
+    for (const m of d.messages) {
+      state.lastId = Math.max(state.lastId, m.id);
+      if (m.direction !== "out") continue;
+      state.inbox.push({ body: m.body, kind: m.kind, read: false });
+      const code = m.kind === "otp" && (m.body.match(/\b(\d{6})\b/) || [])[1];
+      if (code && !state.compose) state.compose = "SK " + code; // ready to send from Messages
+      flash(m.body, m.kind === "otp" ? "AppLink" : "SerialKoi");
+    }
+    if (d.messages.length && state.mode !== "ussd" && state.mode !== "loading") render();
+  } catch (e) {}
+}
+setInterval(poll, 1500);
+
+$("phoneSel").onchange = () => { Object.assign(state, { mode: "home", dial: "", input: "", inbox: [], lastId: 0, compose: "" }); render(); poll(); };
+$("fillBtn").onclick = async () => { await fetch("/sim/fill", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" }); flash("6 patients added to the queue", "Demo"); };
+$("resetBtn").onclick = async () => {
+  if (!confirm("Clear every serial and message in the demo?")) return;
+  await fetch("/sim/reset", { method: "POST" });
+  Object.assign(state, { mode: "home", dial: "", input: "", inbox: [], lastId: 0, compose: "" }); render();
+  $("assistantFrame").contentWindow.location.reload(); $("displayFrame").contentWindow.location.reload();
+};
+function tickClock() { $("clock").textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); }
+tickClock(); setInterval(tickClock, 15000);
+render(); poll();
+</script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SerialKoi Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/app.css">
+<style>
+  .wrap { max-width: 480px; margin: 0 auto; padding: 16px 16px 40px; }
+  header.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+  .switch { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 4px 6px 4px 12px; }
+  .switch button { border: 0; border-radius: 999px; padding: 4px 10px; font-weight: 700; font-size: 12px; }
+  .switch.on button { background: var(--teal); color: #fff; }
+  .switch.off button { background: var(--red-soft); color: var(--red); }
+
+  .doc { margin: 0 0 12px; }
+  .doc h1 { font-size: 20px; margin: 0; line-height: 1.2; }
+  .doc p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+
+  .now { padding: 18px; text-align: center; position: relative; overflow: hidden; }
+  .now .lbl { font-size: 14px; }
+  .now .num { font-size: 88px; font-weight: 700; line-height: 1; margin: 6px 0 2px; color: var(--teal-dark); font-variant-numeric: tabular-nums; }
+  .now .num.empty { color: #c9c4b8; }
+  .now .who { font-size: 15px; color: var(--muted); min-height: 22px; }
+  .now .actions { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 14px; }
+  .btn.next { padding: 18px; font-size: 20px; border-radius: 14px; }
+  .btn.next .en { color: rgba(255,255,255,.8); }
+  .pulse { animation: pulse .5s ease; }
+  @keyframes pulse { 0% { transform: scale(1); } 40% { transform: scale(1.12); } 100% { transform: scale(1); } }
+
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0; }
+  .stat { padding: 10px 6px; text-align: center; }
+  .stat b { display: block; font-size: 22px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .stat span { font-size: 11px; color: var(--muted); font-weight: 600; line-height: 1.2; display: block; }
+
+  section h2 { font-size: 15px; margin: 18px 2px 8px; display: flex; justify-content: space-between; align-items: baseline; }
+  .walkin { padding: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .walkin .btn { grid-column: 1 / -1; }
+
+  .list { padding: 4px 0; }
+  .row { display: grid; grid-template-columns: 52px 1fr auto; align-items: center; gap: 10px; padding: 10px 14px; border-top: 1px solid var(--line); }
+  .row:first-child { border-top: 0; }
+  .serial { width: 44px; height: 44px; border-radius: 12px; background: var(--teal-soft); color: var(--teal-dark); font-weight: 700; font-size: 18px; display: grid; place-items: center; font-variant-numeric: tabular-nums; }
+  .row.missed .serial { background: var(--red-soft); color: var(--red); }
+  .row .name { font-weight: 600; line-height: 1.2; }
+  .row .meta { font-size: 12px; color: var(--muted); display: flex; gap: 6px; align-items: center; margin-top: 3px; flex-wrap: wrap; }
+  .eta { font-weight: 700; font-size: 14px; text-align: right; white-space: nowrap; }
+  .eta small { display: block; color: var(--muted); font-weight: 500; font-size: 11px; }
+  .empty-list { padding: 18px; text-align: center; color: var(--muted); font-size: 14px; }
+
+  .foot { margin-top: 20px; font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .dial { font-weight: 700; color: var(--ink); letter-spacing: .02em; }
+
+  .login { max-width: 360px; margin: 10vh auto 0; padding: 24px; display: grid; gap: 14px; }
+  .login h1 { font-size: 20px; margin: 4px 0 0; }
+  .err { color: var(--red); font-size: 14px; min-height: 20px; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div id="loginView" class="wrap" hidden>
+  <form class="card login" id="loginForm">
+    <div class="brand"><div class="brand-mark">স</div><div>সিরিয়াল কই<small>SerialKoi · Assistant</small></div></div>
+    <h1>চেম্বারে লগইন <span class="en">Chamber login</span></h1>
+    <div class="field"><label for="code">চেম্বার কোড · Chamber code</label><input class="input" id="code" inputmode="numeric" maxlength="4" required></div>
+    <div class="field"><label for="pin">পিন · PIN</label><input class="input" id="pin" type="password" inputmode="numeric" maxlength="6" required></div>
+    <div class="err" id="loginErr"></div>
+    <button class="btn" type="submit">ঢুকুন · Log in</button>
+  </form>
+</div>
+
+<div id="mainView" class="wrap" hidden>
+  <header class="top">
+    <div class="brand"><div class="brand-mark">স</div><div>সিরিয়াল কই<small>SerialKoi · Assistant</small></div></div>
+    <div class="switch on" id="openSwitch"><span id="openLbl">সিরিয়াল চালু</span><button id="openBtn" type="button">ON</button></div>
+  </header>
+  <div class="doc"><h1 id="doctor">—</h1><p id="chamberName"></p></div>
+
+  <div class="card now">
+    <div class="lbl"><span class="bn">এখন ভেতরে</span> <span class="en">Now inside</span></div>
+    <div class="num empty" id="nowNum">—</div>
+    <div class="who" id="nowWho">কেউ নেই · Nobody yet</div>
+    <div class="actions">
+      <button class="btn next" id="nextBtn" type="button"><span class="bn">পরের রোগী</span> <span class="en">Next patient</span></button>
+      <button class="btn warn" id="noShowBtn" type="button"><span class="bn">আসেননি</span> <span class="en" style="color:inherit;opacity:.8">No-show, skip</span></button>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="card stat"><b id="sWaiting">0</b><span>অপেক্ষায়<br>waiting</span></div>
+    <div class="card stat"><b id="sAvg">0</b><span>মিনিট/রোগী<br>min each</span></div>
+    <div class="card stat"><b id="sServed">0</b><span>দেখা শেষ<br>seen</span></div>
+    <div class="card stat"><b id="sRemote">0</b><span>ফোনে বুকিং<br>by phone</span></div>
+  </div>
+
+  <section>
+    <h2><span>সরাসরি এলে সিরিয়াল দিন <span class="en">Add a walk-in</span></span></h2>
+    <form class="card walkin" id="walkForm">
+      <input class="input" id="wName" placeholder="নাম · Name" autocomplete="off">
+      <input class="input" id="wPhone" placeholder="ফোন (ঐচ্ছিক)" inputmode="tel" autocomplete="off">
+      <button class="btn" type="submit">সিরিয়াল দিন · Give serial</button>
+    </form>
+  </section>
+
+  <section>
+    <h2><span>লাইনে আছেন <span class="en">Waiting</span></span><span class="en" id="waitCount"></span></h2>
+    <div class="card list" id="waitList"></div>
+  </section>
+
+  <section id="missedSec" hidden>
+    <h2><span>আসেননি <span class="en">Missed: tap when they arrive</span></span></h2>
+    <div class="card list" id="missedList"></div>
+  </section>
+
+  <div class="foot">
+    <span>রোগীরা ডায়াল করবেন · Patients dial <span class="dial" id="dial"></span></span>
+    <span><a id="displayLink" href="#" target="_blank">ওয়েটিং রুম স্ক্রিন · Display</a> · <a id="posterLink" href="#" target="_blank">পোস্টার · Poster</a> · <a href="#" id="logout">লগআউট</a></span>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+  del(k) { try { localStorage.removeItem(k); } catch (e) {} },
+};
+let code = null, token = null, lastServing = null, timer = null;
+
+function toast(msg) {
+  const t = $("toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), 2400);
+}
+function esc(s) { return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+const SRC = { ussd: ["USSD", ""], sms: ["SMS", "sms"], walkin: ["সরাসরি · Walk-in", "walkin"] };
+
+async function api(path, opts = {}) {
+  const res = await fetch(path, { ...opts, headers: { "Content-Type": "application/json", "X-Token": token || "", ...(opts.headers || {}) } });
+  if (res.status === 401) { logout(); throw new Error("login"); }
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.detail || "Something went wrong");
+  return data;
+}
+
+function render(s) {
+  const c = s.chamber;
+  $("doctor").textContent = c.doctor;
+  $("chamberName").textContent = `${c.name} · ${c.area}`;
+  $("dial").textContent = c.dial;
+  $("displayLink").href = `/display/${c.code}`;
+  $("posterLink").href = `/poster/${c.code}`;
+  const sw = $("openSwitch");
+  sw.className = "switch " + (c.is_open ? "on" : "off");
+  $("openLbl").textContent = c.is_open ? "সিরিয়াল চালু" : "সিরিয়াল বন্ধ";
+  $("openBtn").textContent = c.is_open ? "ON" : "OFF";
+
+  const num = $("nowNum");
+  if (s.serving) {
+    num.textContent = s.serving.serial; num.classList.remove("empty");
+    $("nowWho").textContent = s.serving.label + (s.serving.has_phone ? " · SMS পাঠানো হয়েছে" : "");
+    if (lastServing !== null && lastServing !== s.serving.serial) { num.classList.remove("pulse"); void num.offsetWidth; num.classList.add("pulse"); }
+    lastServing = s.serving.serial;
+  } else {
+    num.textContent = "—"; num.classList.add("empty");
+    $("nowWho").textContent = s.waiting.length ? "শুরু করতে “পরের রোগী” চাপুন · Tap Next to start" : "কেউ নেই · Nobody yet";
+    lastServing = null;
+  }
+  $("nextBtn").disabled = !s.serving && !s.waiting.length;
+  $("noShowBtn").disabled = !s.serving;
+
+  $("sWaiting").textContent = s.waiting.length;
+  $("sAvg").textContent = c.avg_minutes;
+  $("sServed").textContent = s.stats.served;
+  $("sRemote").textContent = s.stats.remote;
+  $("waitCount").textContent = s.waiting.length ? `${s.waiting.length} জন` : "";
+
+  $("waitList").innerHTML = s.waiting.length ? s.waiting.map((w) => {
+    const [srcLabel, srcCls] = SRC[w.source] || [w.source, ""];
+    const flags = [`<span class="chip ${srcCls}">${srcLabel}</span>`];
+    if (w.recalled) flags.push(`<span class="chip amber">ফিরে এসেছেন</span>`);
+    if (w.has_phone && w.alerted) flags.push(`<span title="Come-now SMS sent">🔔 SMS</span>`);
+    return `<div class="row"><div class="serial">${w.serial}</div>
+      <div><div class="name">${esc(w.label)}</div><div class="meta">${flags.join("")}</div></div>
+      <div class="eta">${w.ahead === 0 ? "পরেই" : "~" + w.eta + " মি"}<small>${w.ahead === 0 ? "next" : w.ahead + " ahead"}</small></div></div>`;
+  }).join("") : `<div class="empty-list">লাইনে কেউ নেই · No one waiting</div>`;
+
+  $("missedSec").hidden = !s.skipped.length;
+  $("missedList").innerHTML = s.skipped.map((m) =>
+    `<div class="row missed"><div class="serial">${m.serial}</div><div><div class="name">${esc(m.label)}</div></div>
+     <button class="btn small" data-recall="${m.id}" type="button">এসেছেন · Arrived</button></div>`).join("");
+}
+
+async function refresh() { try { render(await api(`/api/chamber/${code}`)); } catch (e) {} }
+function startPolling() { clearInterval(timer); refresh(); timer = setInterval(refresh, 3000); }
+
+async function act(path, body, okMsg) {
+  try { render(await api(path, { method: "POST", body: JSON.stringify(body || {}) })); if (okMsg) toast(okMsg); }
+  catch (e) { if (e.message !== "login") toast(e.message); }
+}
+
+$("nextBtn").onclick = () => act(`/api/chamber/${code}/next`, null);
+$("noShowBtn").onclick = () => act(`/api/chamber/${code}/noshow`, null, "রোগীকে SMS করা হয়েছে · Patient notified");
+$("openBtn").onclick = () => act(`/api/chamber/${code}/open`, { open: $("openSwitch").classList.contains("off") });
+$("missedList").onclick = (e) => { const id = e.target.closest("[data-recall]")?.dataset.recall; if (id) act(`/api/chamber/${code}/recall/${id}`, null, "পরের জন হিসেবে ডাকা হবে · Will be called next"); };
+$("walkForm").onsubmit = async (e) => {
+  e.preventDefault();
+  await act(`/api/chamber/${code}/walkin`, { name: $("wName").value, phone: $("wPhone").value }, "সিরিয়াল দেওয়া হয়েছে · Serial added");
+  $("wName").value = ""; $("wPhone").value = "";
+};
+
+function show(main) { $("loginView").hidden = main; $("mainView").hidden = !main; }
+function logout(e) { if (e) e.preventDefault(); store.del("sk-token"); store.del("sk-code"); token = null; clearInterval(timer); show(false); }
+$("logout").onclick = logout;
+
+async function login(c, p) {
+  const res = await fetch("/api/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: c, pin: p }) });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.detail || "Login failed");
+  code = data.code; token = data.token; store.set("sk-token", token); store.set("sk-code", code);
+  show(true); startPolling();
+}
+$("loginForm").onsubmit = async (e) => {
+  e.preventDefault(); $("loginErr").textContent = "";
+  try { await login($("code").value.trim(), $("pin").value.trim()); } catch (err) { $("loginErr").textContent = "কোড বা পিন ভুল · " + err.message; }
+};
+
+(async () => {
+  const q = new URLSearchParams(location.search);
+  if (q.get("code") && q.get("pin")) { try { await login(q.get("code"), q.get("pin")); return; } catch (e) {} }
+  token = store.get("sk-token"); code = store.get("sk-code");
+  if (token && code) { show(true); startPolling(); } else { show(false); if (q.get("code")) $("code").value = q.get("code"); }
+})();
+</script>
+</body>
+</html>

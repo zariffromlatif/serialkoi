@@ -1,0 +1,10 @@
+# {$DOMAIN} is replaced by setup.sh. Caddy gets and renews HTTPS certificates automatically.
+{$DOMAIN} {
+	encode gzip
+	reverse_proxy 127.0.0.1:8791
+}
+
+demo.{$DOMAIN} {
+	encode gzip
+	reverse_proxy 127.0.0.1:8792
+}
